@@ -1,17 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const dotenv = require('dotenv');
-const mysql = require('mysql');
-
-dotenv.config();
-
-// Connect to the MySQL database
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
+const connection = require('../connection');
 
 router.get('/', async (req, res) => {
     try {

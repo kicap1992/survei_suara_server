@@ -3,9 +3,9 @@ const http = require('http');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const fileUpload = require('express-fileupload');
-const mysql = require('mysql');
 const app = express();
 const server = http.createServer(app);
+const connection = require('./connection');
 
 
 dotenv.config();
@@ -17,13 +17,7 @@ app.options('*', cors());
 app.use(cors());
 
 
-// Connect to the MySQL database
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -31,6 +25,11 @@ app.get('/', (req, res) => {
 
 app.use('/area', require('./routes/area_routes'));
 app.use('/caleg', require('./routes/caleg_routes'));
+app.use('/survei', require('./routes/survei_routes'));
+
+app.get('/assets/caleg/:id/:filename', (req, res) => {
+    res.sendFile(__dirname + '/assets/caleg/' + req.params.id + '/' + req.params.filename);
+  })
 
 // app error handler
 app.use((err, req, res, next) => {
