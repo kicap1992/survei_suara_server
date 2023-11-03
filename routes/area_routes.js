@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
         connection.query(query, [area], (err, rows) => {
             if (err) {
                 console.log('error dalam', err);
-                return res.status(500).send(err.message);
+                return res.status(500).send({message: err.message, status :false });
             }
             return res.json({message: 'success', data: rows,status :true });
         });
@@ -49,11 +49,33 @@ router.delete('/:id', async (req, res) => {
         const query = 'DELETE FROM tb_area WHERE id_area = ?';
         connection.query(query, [id], (err, rows) => {
             if (err) {
-                return res.status(500).send(err.message);
+                return res.status(500).send({message: error.message, status :false });
             }
             return res.json({message: 'success', data: rows,status :true });
         });
     } catch (error) {
+        return res.status(500).send({message: error.message, status :false });
+    }
+});
+
+router.get('/cek_area/:nik', async (req, res) => {
+    const {nik} = req.params;
+
+    if (nik === undefined || nik === '' || nik === null) return res.status(400).send({message: 'nik is required', status :false });
+
+    try {
+        const query = 'SELECT DISTINCT b.* FROM tb_tim_survei a join tb_area b join tb_relasi_caleg_area c on a.id_caleg = c.id_caleg and b.id_area = c.id_area  where a.nik = ?';
+
+        connection.query(query, [nik], (err, rows) => {
+            if (err) {
+                console.log('error dalam', err);
+                return res.status(500).send({message: err.message, status :false });
+            }
+            return res.json({message: 'success', data: {area: rows , jumlah: rows.length},status :true });
+        });
+       
+    } catch (error) {
+        console.log('error luar', error);
         return res.status(500).send({message: error.message, status :false });
     }
 });

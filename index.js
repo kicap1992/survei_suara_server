@@ -26,6 +26,8 @@ app.get('/', (req, res) => {
 app.use('/area', require('./routes/area_routes'));
 app.use('/caleg', require('./routes/caleg_routes'));
 app.use('/survei', require('./routes/survei_routes'));
+app.use('/login', require('./routes/login_routes'));
+app.use('/tim_survei', require('./routes/tim_survei_routes'));
 
 app.get('/assets/caleg/:id/:filename', (req, res) => {
     res.sendFile(__dirname + '/assets/caleg/' + req.params.id + '/' + req.params.filename);

@@ -5,7 +5,7 @@ const md5 = require('md5');
 
 // GET all survei data
 router.get('/', async (req, res) => {
-    const query = 'SELECT * FROM tb_tim_survei';
+    const query = 'SELECT a.*, b.nama_caleg FROM tb_tim_survei a join tb_caleg b on a.id_caleg = b.id_caleg';
 
     try {
         connection.query(query, (err, rows) => {
@@ -22,19 +22,17 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET a specific survei data by ID
-router.get('/:id', async (req, res) => {
-    
 
-});
 
 // POST a new survei data
 router.post('/', async (req, res) => {
-    const { nik, nama } = req.body;
+    const { nik, nama , id_caleg} = req.body;
 
     if (nik === undefined || nik === '' || nik === null) return res.status(400).send({ message: 'nik is required', status: false });
 
     if (nama === undefined || nama === '' || nama === null) return res.status(400).send({ message: 'nama is required', status: false });
+
+    if (id_caleg === undefined || id_caleg === '' || id_caleg === null) return res.status(400).send({ message: 'id_caleg is required', status: false });
 
 
 
@@ -45,16 +43,16 @@ router.post('/', async (req, res) => {
         connection.query(check_query, [nik], (err, rows) => {
             if (err) {
                 console.log('error dalam check nik', err);
-                return res.status(500).send(err.message);
+                return res.status(500).send({message: err.message, status: false});
             }
             if (rows.length > 0) {
                 return res.status(400).send({ message: 'nik sudah terdaftar', status: false });
             }
-            const query = 'INSERT INTO tb_tim_survei (nik, nama) VALUES (?, ?)';
-            connection.query(query, [nik, nama], (err, rows) => {
+            const query = 'INSERT INTO tb_tim_survei (nik, nama, id_caleg) VALUES (?, ?, ?)';
+            connection.query(query, [nik, nama, id_caleg], (err, rows) => {
                 if (err) {
                     console.log('error dalam', err);
-                    return res.status(500).send(err.message);
+                    return res.status(500).send({message: err.message, status: false});
                 }
                 const md5_pass = md5('12345678');
 
@@ -62,7 +60,7 @@ router.post('/', async (req, res) => {
                 connection.query(query, [nik, md5_pass], (err, rows) => {
                     if (err) {
                         console.log('error dalam tambah login', err);
-                        return res.status(500).send(err.message);
+                        return res.status(500).send({message: err.message, status: false});
                     }
                     return res.json({ message: 'success', data: rows, status: true });
                 })
@@ -85,7 +83,7 @@ router.delete('/:nik', async (req, res) => {
         const query = 'DELETE FROM tb_tim_survei WHERE nik = ?';
         connection.query(query, [nik], (err, rows) => {
             if (err) {
-                return res.status(500).send(err.message);
+                return res.status(500).send({message: err.message, status: false});
             }
             return res.json({ message: 'success', data: rows, status: true });
         });

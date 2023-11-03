@@ -93,7 +93,7 @@ router.delete('/:id', async (req, res) => {
         const query = 'DELETE FROM tb_caleg WHERE id_caleg = ?';
         connection.query(query, [id], (err, rows) => {
             if (err) {
-                return res.status(500).send(err.message);
+                return res.status(500).send({ message: error.message, status: false });
             }
             // remove directory
             const uploadDir = path.join(__dirname, '../assets/caleg/' + id);
@@ -123,6 +123,30 @@ router.get('/relasi_area/:id', async (req, res) => {
         console.log("error luar query", error)
         return res.status(500).send({ message: error.message, status: false });
     }
+});
+
+router.get('/area/:id_area', async (req, res) => {
+    const { id_area } = req.params;
+
+    if (id_area === undefined || id_area === '' || id_area === null) return res.status(400).send({ message: 'id area is required', status: false });
+
+    try {
+        const query = 'SELECT b.* FROM tb_relasi_caleg_area a join tb_caleg b on a.id_caleg = b.id_caleg where a.id_area = ?';
+        connection.query(query, [id_area], (err, rows) => {
+            if (err) {
+                console.log("error dalam query", err)
+                return res.status(500).send({ message: err.message, status: false });
+            }
+            return res.json({ message: 'success', data: { caleg: rows, jumlah: rows.length }, status: true });
+        });
+    } catch (error) {
+        console.log("error luar query", error)
+        return res.status(500).send({ message: error.message, status: false });
+    }
+
+
+    
+    
 });
 
 module.exports = router;
