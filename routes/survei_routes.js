@@ -92,6 +92,27 @@ router.delete('/:nik', async (req, res) => {
     }
 });
 
+router.get('/suara/:nik' , async (req, res) => {
+    const {nik} = req.params;
+
+    if (nik === undefined || nik === '' || nik === null) return res.status(400).send({message: 'nik is required', status :false });
+
+    try {
+        const query = 'Select a.nik_nomor_hp,a.nama_pemilih,a.img ,b.nik as nik_tim_survei , b.nama as nama_tim_survei, c.nama_caleg, d.nama_area, a.created_at from tb_data_survei a join tb_tim_survei b join tb_caleg c join tb_area d on a.nik_tim_survei=b.nik and a.id_caleg=c.id_caleg and a.id_area=d.id_area where a.nik_tim_survei = ? order by a.created_at desc';
+        connection.query(query, [nik], (err, rows) => {
+            if (err) {
+                console.log("error dalam query", err)
+                return res.status(500).send({ message: err.message, status: false });
+            }
+            return res.json({ message: 'success', data: { data: rows, jumlah: rows.length }, status: true });
+        });
+    } catch (error) {
+        console.log("error luar query", error)
+        return res.status(500).send({ message: error.message, status: false });
+    }
+
+});
+
 
 
 module.exports = router;

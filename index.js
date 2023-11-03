@@ -33,6 +33,10 @@ app.get('/assets/caleg/:id/:filename', (req, res) => {
     res.sendFile(__dirname + '/assets/caleg/' + req.params.id + '/' + req.params.filename);
   })
 
+  app.get('/assets/pemilih/:id/:filename', (req, res) => {
+    res.sendFile(__dirname + '/assets/pemilih/' + req.params.id + '/' + req.params.filename);
+  })
+
 // app error handler
 app.use((err, req, res, next) => {
     console.log(err);
