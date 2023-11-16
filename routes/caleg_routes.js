@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
 
             const the_login = 'INSERT INTO tb_login_caleg (id_caleg, username, password) VALUES (?, ?, ?)';
 
-            connection.query(the_login, [id, nama+'_'+nomor_urut, md5(nama+'_'+nomor_urut)], (err, rows) => {
+            connection.query(the_login, [id, nama+'_'+nomor_urut, md5(12345678)], (err, rows) => {
                 if (err) {
                     console.log("error insert data login", err)
                     // return res.status(500).send({ message: err.message, status: false });
@@ -177,6 +177,37 @@ router.get('/suara/:id_caleg' , async (req, res) => {
         console.log("error luar query", error)
         return res.status(500).send({ message: error.message, status: false });
     }
+});
+
+router.get('/detail/:id_caleg' , async (req, res) => {
+    const { id_caleg } = req.params;
+
+    if (id_caleg === undefined || id_caleg === '' || id_caleg === null) return res.status(400).send({ message: 'id caleg is required', status: false });
+
+    const query_1 = 'Select count(*) as jumlah_tim_survei from tb_tim_survei where id_caleg = ?';
+    const query_2 = 'Select count(*) as jumlah_suara from tb_data_survei where id_caleg = ?';
+    const query_3  = 'Select count(*) as jumlah_area from tb_relasi_caleg_area where id_caleg = ?'
+
+    connection.query(query_1, [id_caleg], (err, rows_1) => {
+        if (err) {
+            console.log("error dalam query 1", err)
+            return res.status(500).send({ message: err.message, status: false });
+        }
+        connection.query(query_2, [id_caleg], (err, rows_2) => {
+            if (err) {
+                console.log("error dalam query 2", err)
+                return res.status(500).send({ message: err.message, status: false });
+            }
+            connection.query(query_3, [id_caleg], (err, rows_3) => {
+                if (err) {
+                    console.log("error dalam query 3", err)
+                    return res.status(500).send({ message: err.message, status: false });
+                }
+                return res.json({ message: 'success', data: { jumlah_tim_survei: rows_1[0].jumlah_tim_survei, jumlah_suara: rows_2[0].jumlah_suara, jumlah_area: rows_3[0].jumlah_area }, status: true });
+            });
+        });
+    });
+    
 });
 
 module.exports = router;

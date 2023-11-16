@@ -113,6 +113,26 @@ router.get('/suara/:nik' , async (req, res) => {
 
 });
 
+router.get('/caleg/:id_caleg' , async (req, res) => {
+    const {id_caleg} = req.params;
+
+    if (id_caleg === undefined || id_caleg === '' || id_caleg === null) return res.status(400).send({message: 'id_caleg is required', status :false });
+
+    try {
+        const query = 'Select * from tb_tim_survei where id_caleg = ?';
+        connection.query(query, [id_caleg], (err, rows) => {
+            if (err) {
+                console.log("error dalam query", err)
+                return res.status(500).send({ message: err.message, status: false });
+            }
+            return res.json({ message: 'success', data: { survei: rows, jumlah: rows.length }, status: true });
+        });
+    } catch (error) {
+        console.log("error luar query", error)
+        return res.status(500).send({ message: error.message, status: false });
+    }
+});
+
 
 
 module.exports = router;
