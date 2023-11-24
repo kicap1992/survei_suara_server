@@ -6,12 +6,13 @@ const md5 = require('md5');
 // Define your routes here
 router.post('/tim_survei', (req, res) => {
     const { username, password } = req.body;
+    console.log(req.body);
 
     if (username === undefined || username === '' || username === null) return res.status(400).send({ message: 'username is required', status: false });
 
     if (password === undefined || password === '' || password === null) return res.status(400).send({ message: 'password is required', status: false });
 
-    const query = 'SELECT b.* FROM tb_login_tim_survei a join tb_tim_survei b on a.nik = b.nik WHERE a.nik = ? AND a.password = ?';
+    const query = 'SELECT b.* FROM tb_login_tim_survei a join tb_tim_survei b on a.nik = b.nik WHERE a.username = ? AND a.password = ?';
 
     connection.query(query, [username, md5(password)], (err, rows) => {
         if (err) {

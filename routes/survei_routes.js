@@ -56,8 +56,8 @@ router.post('/', async (req, res) => {
                 }
                 const md5_pass = md5('12345678');
 
-                const query = 'insert into tb_login_tim_survei (nik, password) values (?, ?)';
-                connection.query(query, [nik, md5_pass], (err, rows) => {
+                const query = 'insert into tb_login_tim_survei (nik, username,password) values (?, ?,?)';
+                connection.query(query, [nik,nama ,md5_pass], (err, rows) => {
                     if (err) {
                         console.log('error dalam tambah login', err);
                         return res.status(500).send({message: err.message, status: false});
@@ -98,7 +98,7 @@ router.get('/suara/:nik' , async (req, res) => {
     if (nik === undefined || nik === '' || nik === null) return res.status(400).send({message: 'nik is required', status :false });
 
     try {
-        const query = 'Select a.nik_nomor_hp,a.nama_pemilih,a.img ,b.nik as nik_tim_survei , b.nama as nama_tim_survei, c.nama_caleg, d.nama_area, a.created_at from tb_data_survei a join tb_tim_survei b join tb_caleg c join tb_area d on a.nik_tim_survei=b.nik and a.id_caleg=c.id_caleg and a.id_area=d.id_area where a.nik_tim_survei = ? order by a.created_at desc';
+        const query = 'Select a.nik_nomor_hp,a.nama_pemilih,a.img ,b.nik as nik_tim_survei , b.nama as nama_tim_survei, c.nama_caleg, d.name as kecamatan , e.name as kelurahan, a.tps , a.img,  a.created_at from tb_data_survei a join tb_tim_survei b join tb_caleg c join tb_kecamatan d join tb_kelurahan e on a.nik_tim_survei=b.nik and a.id_caleg=c.id_caleg and a.kecamatan_id=d.kecamatan_id and a.kelurahan_id=e.kelurahan_id  where a.nik_tim_survei = ? order by a.created_at desc';
         connection.query(query, [nik], (err, rows) => {
             if (err) {
                 console.log("error dalam query", err)
